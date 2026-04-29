@@ -54,14 +54,18 @@ public class RecursiveListerFrame extends JFrame {
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int returnVal = fileChooser.showOpenDialog((Component)ae.getSource());
             if(returnVal==JFileChooser.APPROVE_OPTION) {
-                try {
-                    listFilesRecursively(fileChooser.getSelectedFile());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                listerTA.setText("");
+                listerTA.append("Reading files from '" + fileChooser.getSelectedFile().getName() + "'...\n");
+                new Thread(() -> {
+                    try {
+                        listFilesRecursively(fileChooser.getSelectedFile());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).start();
             }
             else {
-                JOptionPane.showMessageDialog(null, "You have to choose a directory to continue.");
+                System.out.println("User cancelled fileChooser");
             }
         });
 
@@ -101,12 +105,16 @@ public class RecursiveListerFrame extends JFrame {
         }
         if(file.getCanonicalPath().equals(file.getAbsolutePath())) {
             if(file.isFile()) {
-                listerTA.append(file.getAbsolutePath() + "\n");
+                SwingUtilities.invokeLater(() -> {
+                    listerTA.append(file.getAbsolutePath() + "\n");
+                });
             }
-            if (file.isDirectory()) {
+            else if (file.isDirectory()) {
                 File[] directoryChildren = file.listFiles();
-                for(File dirChild : directoryChildren) {
-                    listFilesRecursively(dirChild);
+                if (directoryChildren != null) {
+                    for(File dirChild : directoryChildren) {
+                        listFilesRecursively(dirChild);
+                    }
                 }
             }
         }
