@@ -39,7 +39,7 @@ public class RecursiveListerFrame extends JFrame {
             setSize(screenWidth / 3, (int) (screenHeight / onePointFive));
             setLocation(screenWidth / 3, screenHeight / 4);
 
-            setTitle("Recursive File Lister");
+            setTitle("File Lister");
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             setVisible(true);
         }
